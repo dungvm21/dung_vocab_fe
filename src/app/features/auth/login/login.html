@@ -1,0 +1,63 @@
+<div class="mx-auto flex w-full max-w-md flex-col justify-center px-4 py-12">
+  <h1 class="text-center text-3xl font-bold">Welcome back</h1>
+  <p class="mt-2 text-center text-sm text-slate-500">Log in to continue studying.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="mt-8 space-y-5" novalidate>
+    @if (error(); as message) {
+      <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ message }}
+      </div>
+    }
+
+    <div>
+      <label for="usernameOrEmail" class="mb-1.5 block text-sm font-semibold text-slate-700">
+        Username or email
+      </label>
+      <input
+        id="usernameOrEmail"
+        type="text"
+        formControlName="usernameOrEmail"
+        autocomplete="username"
+        placeholder="your-username or you@example.com"
+        class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
+        [class.border-red-400]="form.controls.usernameOrEmail.invalid && form.controls.usernameOrEmail.touched"
+      />
+      @if (form.controls.usernameOrEmail.invalid && form.controls.usernameOrEmail.touched) {
+        <p class="mt-1 text-xs text-red-600">Username or email is required.</p>
+      }
+    </div>
+
+    <div>
+      <label for="password" class="mb-1.5 block text-sm font-semibold text-slate-700">
+        Password
+      </label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        autocomplete="current-password"
+        placeholder="••••••••"
+        class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
+        [class.border-red-400]="form.controls.password.invalid && form.controls.password.touched"
+      />
+      @if (form.controls.password.invalid && form.controls.password.touched) {
+        <p class="mt-1 text-xs text-red-600">Password is required.</p>
+      }
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="submitting()"
+      class="w-full rounded-lg bg-brand-600 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {{ submitting() ? 'Logging in…' : 'Log in' }}
+    </button>
+  </form>
+
+  <p class="mt-6 text-center text-sm text-slate-500">
+    No account yet?
+    <a routerLink="/register" class="font-semibold text-brand-600 hover:text-brand-700">
+      Sign up
+    </a>
+  </p>
+</div>

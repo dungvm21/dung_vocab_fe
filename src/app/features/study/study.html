@@ -1,0 +1,108 @@
+<div class="mx-auto w-full max-w-3xl px-4 py-8">
+  @if (error(); as message) {
+    <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ message }}
+    </div>
+    <a routerLink="/dashboard" class="mt-4 inline-block text-sm font-semibold text-brand-600">
+      ← Back to dashboard
+    </a>
+  } @else if (loading()) {
+    <div class="mt-12 animate-pulse rounded-3xl bg-slate-200 p-12" style="height: 24rem"></div>
+  } @else {
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-2xl font-bold">{{ deck()?.title }}</h1>
+        <p class="text-sm text-slate-500">Click the card or press Space to flip.</p>
+      </div>
+      <button
+        type="button"
+        (click)="toggleShuffle()"
+        class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+        [class.!border-brand-400]="shuffled()"
+      >
+        {{ shuffled() ? 'Shuffle: on' : 'Shuffle: off' }}
+      </button>
+    </div>
+
+    @if (cards().length === 0) {
+      <div class="mt-8 rounded-2xl border-2 border-dashed border-slate-300 p-12 text-center">
+        <p class="text-lg font-semibold text-slate-700">This deck has no cards yet.</p>
+        <a
+          [routerLink]="['/decks', deckId]"
+          class="mt-4 inline-block rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
+        >
+          Add cards
+        </a>
+      </div>
+    } @else {
+      <p class="mt-6 text-center text-sm font-semibold text-slate-500">
+        Card {{ progress() }}
+      </p>
+      <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
+        <div
+          class="h-full rounded-full bg-brand-500 transition-all duration-300"
+          [style.width.%]="progressPercent()"
+        ></div>
+      </div>
+
+      <div class="flip-scene mt-6" (click)="flip()">
+        <button
+          type="button"
+          class="flip-card relative block h-80 w-full cursor-pointer rounded-3xl border border-slate-200 text-left shadow-sm"
+          [class.is-flipped]="flipped()"
+          [attr.aria-label]="flipped() ? 'Show term' : 'Show definition'"
+        >
+          <span
+            class="flip-face absolute inset-0 grid place-items-center rounded-3xl bg-white p-8"
+          >
+            <span class="flex flex-col items-center gap-3">
+              <span class="text-center text-3xl font-bold text-slate-900">
+                {{ currentCard()?.term }}
+              </span>
+              @if (currentCard()?.hint; as hint) {
+                <span class="text-center text-sm font-medium text-slate-400">Hint: {{ hint }}</span>
+              }
+            </span>
+          </span>
+          <span
+            class="flip-face flip-face-back absolute inset-0 grid place-items-center rounded-3xl bg-brand-600 p-8"
+          >
+            <span class="text-center text-xl font-medium text-white">
+              {{ currentCard()?.definition }}
+            </span>
+          </span>
+        </button>
+      </div>
+
+      <div class="mt-6 flex items-center justify-center gap-3">
+        <button
+          type="button"
+          (click)="previous()"
+          [disabled]="index() === 0"
+          class="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          ← Previous
+        </button>
+        <button
+          type="button"
+          (click)="flip()"
+          class="rounded-lg bg-brand-600 px-8 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
+        >
+          Flip
+        </button>
+        <button
+          type="button"
+          (click)="next()"
+          [disabled]="index() === cards().length - 1"
+          class="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Next →
+        </button>
+      </div>
+
+      <p class="mt-4 text-center text-xs text-slate-400">
+        Keyboard: ← / → to navigate, Space to flip
+      </p>
+    }
+  }
+</div>
