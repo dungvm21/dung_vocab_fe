@@ -8,6 +8,12 @@
 
       <nav class="flex items-center gap-2">
         @if (auth.isLoggedIn()) {
+          <a
+            routerLink="/review"
+            class="mr-2 rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            Ôn tập
+          </a>
           <span class="mr-2 hidden text-sm font-medium text-slate-600 sm:inline">
             {{ auth.currentUser()?.username }}
           </span>
@@ -16,20 +22,20 @@
             class="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
             (click)="logout()"
           >
-            Log out
+            Đăng xuất
           </button>
         } @else {
           <a
             routerLink="/login"
             class="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
           >
-            Log in
+            Đăng nhập
           </a>
           <a
             routerLink="/register"
             class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
-            Sign up
+            Đăng ký
           </a>
         }
       </nav>

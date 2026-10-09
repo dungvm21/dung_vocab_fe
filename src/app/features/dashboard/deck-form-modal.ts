@@ -24,7 +24,7 @@ export class DeckFormModal {
   /** Emits the payload on submit. Parent decides create vs update. */
   readonly saved = output<DeckRequest>();
 
-  protected readonly categories = ['Languages', 'Science', 'Math', 'History', 'Arts', 'Other'];
+  protected readonly categories = ['Ngoại ngữ', 'Khoa học', 'Toán', 'Lịch sử', 'Nghệ thuật', 'Khác'];
 
   protected readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(150)]],
@@ -40,11 +40,11 @@ export class DeckFormModal {
         this.form.patchValue({
           title: deck.title,
           description: deck.description ?? '',
-          category: deck.category ?? 'Other',
+          category: deck.category ?? 'Khác',
           isPublic: deck.isPublic,
         });
       } else {
-        this.form.reset({ title: '', description: '', category: 'Other', isPublic: false });
+        this.form.reset({ title: '', description: '', category: 'Khác', isPublic: false });
       }
     });
   }

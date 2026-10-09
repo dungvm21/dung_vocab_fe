@@ -33,7 +33,10 @@
       "Bash(curl -s -o /tmp/proxyquiz.txt -w \"proxy quiz status: %{http_code}\\\\n\" \"http://localhost:4200/api/decks/1/study/quiz?count=3\")",
       "Read(//tmp/**)",
       "Bash(ps -p 89776 -o lstart=)",
-      "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && grep -rn \"routerLink\\\\]\" src/app/features | grep -v \"\\(\\)\" | grep -E \"\\\\[\\\\s*'/\" | head; npx ng build 2>&1 | tail -3)"
+      "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && grep -rn \"routerLink\\\\]\" src/app/features | grep -v \"\\(\\)\" | grep -E \"\\\\[\\\\s*'/\" | head; npx ng build 2>&1 | tail -3)",
+      "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | tail -8)",
+      "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | grep -E \"\\(ERROR|error|successfully|complete\\)\" | head -5)",
+      "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | grep -E \"\\(ERROR|Error|error TS|NG[0-9]|complete\\)\" | head -10)"
     ]
   }
 }

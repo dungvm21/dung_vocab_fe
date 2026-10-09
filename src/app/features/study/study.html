@@ -4,10 +4,10 @@
       {{ message }}
     </div>
     <div class="mt-4 flex gap-3">
-      <a routerLink="/dashboard" class="text-sm font-semibold text-brand-600">← Back to dashboard</a>
+      <a routerLink="/dashboard" class="text-sm font-semibold text-brand-600">← Về trang chủ</a>
       @if (tab() === 'quiz') {
         <button type="button" (click)="startQuiz()" class="text-sm font-semibold text-slate-600 hover:text-slate-900">
-          Retry quiz
+          Thử lại
         </button>
       }
     </div>
@@ -18,7 +18,7 @@
       <div>
         <h1 class="text-2xl font-bold">{{ deck()?.title }}</h1>
         <p class="text-sm text-slate-500">
-          {{ tab() === 'flip' ? 'Click the card or press Space to flip.' : 'Pick the right term for each definition.' }}
+          {{ tab() === 'flip' ? 'Bấm vào thẻ hoặc nhấn phím cách để lật.' : 'Chọn thuật ngữ đúng cho mỗi định nghĩa.' }}
         </p>
       </div>
       <div class="inline-flex rounded-lg border border-slate-200 bg-white p-1">
@@ -28,7 +28,7 @@
           class="rounded-md px-4 py-2 text-sm font-semibold transition"
           [class]="tab() === 'flip' ? 'bg-brand-600 text-white' : 'text-slate-600 hover:text-slate-900'"
         >
-          Flip
+          Lật thẻ
         </button>
         <button
           type="button"
@@ -36,7 +36,7 @@
           class="rounded-md px-4 py-2 text-sm font-semibold transition"
           [class]="tab() === 'quiz' ? 'bg-brand-600 text-white' : 'text-slate-600 hover:text-slate-900'"
         >
-          Quiz
+          Trắc nghiệm
         </button>
       </div>
     </div>
@@ -44,17 +44,17 @@
     @if (tab() === 'flip') {
       @if (cards().length === 0) {
         <div class="mt-8 rounded-2xl border-2 border-dashed border-slate-300 p-12 text-center">
-          <p class="text-lg font-semibold text-slate-700">This deck has no cards yet.</p>
+          <p class="text-lg font-semibold text-slate-700">Bộ thẻ này chưa có thẻ nào.</p>
           <a
             [routerLink]="['/decks', deckId()]"
             class="mt-4 inline-block rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
-            Add cards
+            Thêm thẻ
           </a>
         </div>
       } @else {
         <p class="mt-6 text-center text-sm font-semibold text-slate-500">
-          Card {{ progress() }}
+          Thẻ {{ progress() }}
         </p>
         <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
           <div
@@ -68,7 +68,7 @@
             type="button"
             class="flip-card relative block h-80 w-full cursor-pointer rounded-3xl border border-slate-200 text-left shadow-sm"
             [class.is-flipped]="flipped()"
-            [attr.aria-label]="flipped() ? 'Show term' : 'Show definition'"
+            [attr.aria-label]="flipped() ? 'Hiện thuật ngữ' : 'Hiện định nghĩa'"
           >
             <span
               class="flip-face absolute inset-0 grid place-items-center rounded-3xl bg-white p-8"
@@ -78,7 +78,7 @@
                   {{ currentCard()?.term }}
                 </span>
                 @if (currentCard()?.hint; as hint) {
-                  <span class="text-center text-sm font-medium text-slate-400">Hint: {{ hint }}</span>
+                  <span class="text-center text-sm font-medium text-slate-400">Gợi ý: {{ hint }}</span>
                 }
               </span>
             </span>
@@ -99,14 +99,14 @@
             [disabled]="index() === 0"
             class="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            ← Previous
+            ← Trước
           </button>
           <button
             type="button"
             (click)="flip()"
             class="rounded-lg bg-brand-600 px-8 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
-            Flip
+            Lật thẻ
           </button>
           <button
             type="button"
@@ -114,39 +114,39 @@
             [disabled]="index() === cards().length - 1"
             class="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Next →
+            Sau →
           </button>
         </div>
 
         <p class="mt-4 text-center text-xs text-slate-400">
-          Keyboard: ← / → to navigate, Space to flip
+          Phím tắt: ← / → để chuyển thẻ, phím cách để lật
         </p>
       }
     } @else {
       @if (cards().length < 4) {
         <div class="mt-8 rounded-2xl border-2 border-dashed border-slate-300 p-12 text-center">
-          <p class="text-lg font-semibold text-slate-700">Quiz needs at least 4 cards.</p>
-          <p class="mt-1 text-sm text-slate-500">Add more cards to unlock multiple choice.</p>
+          <p class="text-lg font-semibold text-slate-700">Trắc nghiệm cần ít nhất 4 thẻ.</p>
+          <p class="mt-1 text-sm text-slate-500">Thêm thẻ để mở khóa chế độ trắc nghiệm.</p>
           <a
             [routerLink]="['/decks', deckId()]"
             class="mt-4 inline-block rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
-            Add cards
+            Thêm thẻ
           </a>
         </div>
       } @else if (quizFinished()) {
         <div class="mt-8 rounded-2xl border-2 border-dashed border-slate-300 p-12 text-center">
           <p class="text-4xl font-bold text-brand-600">{{ deckProgress()?.percent ?? 0 }}%</p>
-          <p class="mt-1 text-sm font-semibold text-slate-700">deck mastery</p>
+          <p class="mt-1 text-sm font-semibold text-slate-700">độ thành thạo bộ thẻ</p>
           <div class="mt-4 flex justify-center gap-4 text-sm">
             <span class="rounded-full bg-emerald-50 px-3 py-1 font-semibold text-emerald-700">
-              Mastered {{ deckProgress()?.mastered ?? 0 }}
+              Đã thành thạo {{ deckProgress()?.mastered ?? 0 }}
             </span>
             <span class="rounded-full bg-amber-50 px-3 py-1 font-semibold text-amber-700">
-              Learning {{ deckProgress()?.stillLearning ?? 0 }}
+              Đang học {{ deckProgress()?.stillLearning ?? 0 }}
             </span>
             <span class="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-600">
-              New {{ deckProgress()?.notLearned ?? 0 }}
+              Chưa học {{ deckProgress()?.notLearned ?? 0 }}
             </span>
           </div>
           <button
@@ -154,20 +154,20 @@
             (click)="startQuiz()"
             class="mt-6 rounded-lg bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
-            Study again
+            Học lại
           </button>
         </div>
       } @else if (quizLoading()) {
         <div class="mt-8 h-64 animate-pulse rounded-3xl bg-slate-200"></div>
       } @else if (questions().length === 0) {
         <div class="mt-8 rounded-2xl border-2 border-dashed border-slate-300 p-12 text-center">
-          <p class="text-lg font-semibold text-slate-700">No quiz available.</p>
+          <p class="text-lg font-semibold text-slate-700">Không có bài trắc nghiệm nào.</p>
           <button
             type="button"
             (click)="startQuiz()"
             class="mt-4 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
-            Retry
+            Thử lại
           </button>
         </div>
       } @else {
@@ -179,12 +179,12 @@
                 [style.width.%]="dp.percent"
               ></div>
             </div>
-            <span class="text-xs font-semibold text-slate-500">{{ dp.percent }}% mastered</span>
+            <span class="text-xs font-semibold text-slate-500">{{ dp.percent }}% thành thạo</span>
           </div>
         }
 
         <p class="mt-4 text-center text-sm font-semibold text-slate-500">
-          Question {{ quizIndex() + 1 }} / {{ questions().length }}
+          Câu hỏi {{ quizIndex() + 1 }} / {{ questions().length }}
         </p>
 
         @if (currentQuestion(); as question) {
@@ -217,12 +217,12 @@
               <div class="mt-5 text-center">
                 @if (answer.correct) {
                   <p class="text-sm font-bold text-emerald-600">
-                    Correct! ({{ answer.consecutiveCorrect }} in a row ·
-                    {{ answer.state === 'MASTERED' ? 'mastered' : 'still learning' }})
+                    Chính xác! ({{ answer.consecutiveCorrect }} lần liên tiếp ·
+                    {{ answer.state === 'MASTERED' ? 'đã thành thạo' : 'đang học' }})
                   </p>
                 } @else {
                   <p class="text-sm font-bold text-red-500">
-                    Wrong — correct answer: <span class="underline">{{ answer.correctTerm }}</span>
+                    Sai — đáp án đúng: <span class="underline">{{ answer.correctTerm }}</span>
                   </p>
                 }
                 <button
@@ -230,7 +230,7 @@
                   (click)="nextQuestion()"
                   class="mt-4 rounded-lg bg-brand-600 px-8 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
                 >
-                  {{ quizIndex() === questions().length - 1 ? 'Finish' : 'Next →' }}
+                  {{ quizIndex() === questions().length - 1 ? 'Hoàn thành' : 'Câu sau →' }}
                 </button>
               </div>
             } @else {
@@ -240,7 +240,7 @@
                   (click)="skipQuestion()"
                   class="text-sm font-semibold text-slate-400 transition hover:text-slate-600"
                 >
-                  Skip this one
+                  Bỏ qua câu này
                 </button>
               </div>
             }

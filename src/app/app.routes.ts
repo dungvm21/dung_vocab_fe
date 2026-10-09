@@ -34,6 +34,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/study/study').then((m) => m.Study),
   },
   {
+    path: 'review',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/review/srs-review').then((m) => m.SrsReview),
+  },
+  {
     path: '**',
     redirectTo: 'dashboard',
   },

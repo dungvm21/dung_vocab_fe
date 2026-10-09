@@ -1,0 +1,120 @@
+<div class="mx-auto w-full max-w-3xl px-4 py-8">
+  @switch (true) {
+    @case (error() !== null) {
+      <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ error() }}
+      </div>
+      <div class="mt-4 flex gap-3">
+        <a routerLink="/dashboard" class="text-sm font-semibold text-brand-600">← Về trang chủ</a>
+        <button type="button" (click)="restart()" class="text-sm font-semibold text-slate-600 hover:text-slate-900">
+          Thử lại
+        </button>
+      </div>
+    }
+
+    @case (loading()) {
+      <div class="mt-12 h-80 animate-pulse rounded-3xl bg-slate-200"></div>
+    }
+
+    @case (finished()) {
+      <div class="mt-12 rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm">
+        <p class="text-5xl">🎉</p>
+        <h1 class="mt-4 text-2xl font-bold">Bạn đã hoàn thành lịch ôn tập hôm nay!</h1>
+        <p class="mt-2 text-sm text-slate-500">Hẹn gặp lại vào ngày mai.</p>
+        <div class="mt-6 flex justify-center gap-3">
+          <button
+            type="button"
+            (click)="restart()"
+            class="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+          >
+            Ôn thêm
+          </button>
+          <a
+            routerLink="/dashboard"
+            class="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
+          >
+            Về trang chủ
+          </a>
+        </div>
+      </div>
+    }
+
+    @case (queue().length === 0) {
+      <div class="mt-12 rounded-2xl border-2 border-dashed border-slate-300 p-12 text-center">
+        <p class="text-4xl">☕</p>
+        <p class="mt-3 text-lg font-semibold text-slate-700">Không có thẻ nào đến hạn ôn tập.</p>
+        <p class="mt-1 text-sm text-slate-500">Quay lại sau nhé!</p>
+        <a
+          routerLink="/dashboard"
+          class="mt-6 inline-block rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
+        >
+          Về trang chủ
+        </a>
+      </div>
+    }
+
+    @default {
+      <p class="text-center text-sm font-semibold text-slate-500">
+        Thẻ {{ progress() }}
+      </p>
+      <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
+        <div
+          class="h-full rounded-full bg-brand-500 transition-all duration-300"
+          [style.width.%]="progressPercent()"
+        ></div>
+      </div>
+
+      @if (currentCard(); as card) {
+        <div class="flip-scene mt-6" (click)="flip()">
+          <button
+            type="button"
+            class="flip-card relative block h-80 w-full cursor-pointer rounded-3xl border border-slate-200 text-left shadow-sm"
+            [class.is-flipped]="flipped()"
+            [attr.aria-label]="flipped() ? 'Hiện thuật ngữ' : 'Hiện định nghĩa'"
+          >
+            <span class="flip-face absolute inset-0 grid place-items-center rounded-3xl bg-white p-8">
+              <span class="flex flex-col items-center gap-3">
+                <span class="text-center text-3xl font-bold text-slate-900">{{ card.term }}</span>
+                @if (card.hint; as hint) {
+                  <span class="text-center text-sm font-medium text-slate-400">Gợi ý: {{ hint }}</span>
+                }
+              </span>
+            </span>
+            <span
+              class="flip-face flip-face-back absolute inset-0 grid place-items-center rounded-3xl bg-brand-600 p-8"
+            >
+              <span class="text-center text-xl font-medium text-white">{{ card.definition }}</span>
+            </span>
+          </button>
+        </div>
+
+        <div class="mt-6 min-h-16">
+          @if (flipped()) {
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              @for (rating of ratings; track rating.score) {
+                <button
+                  type="button"
+                  (click)="rate(rating.score)"
+                  [disabled]="submitting()"
+                  class="rounded-xl border-2 px-3 py-3 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-50"
+                  [class]="rating.classes"
+                >
+                  {{ rating.label }}
+                  <span class="mt-0.5 block text-xs font-medium opacity-60">{{ rating.score }}</span>
+                </button>
+              }
+            </div>
+          } @else {
+            <p class="text-center text-sm text-slate-400">
+              Nhớ lời dịch rồi nhấn phím cách hoặc bấm vào thẻ để lật
+            </p>
+          }
+        </div>
+
+        <p class="mt-4 text-center text-xs text-slate-400">
+          Phím tắt: Space để lật · 1–4 để chấm điểm sau khi lật
+        </p>
+      }
+    }
+  }
+</div>

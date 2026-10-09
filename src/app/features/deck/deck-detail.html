@@ -13,17 +13,17 @@
           <h1 class="text-3xl font-bold">{{ d.title }}</h1>
           @if (d.isPublic) {
             <span class="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-              Public
+              Công khai
             </span>
           } @else {
             <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500">
-              Private
+              Riêng tư
             </span>
           }
         </div>
-        <p class="mt-1 text-sm text-slate-500">{{ d.description || 'No description.' }}</p>
+        <p class="mt-1 text-sm text-slate-500">{{ d.description || 'Chưa có mô tả.' }}</p>
         <p class="mt-1 text-xs font-medium text-slate-400">
-          {{ d.category }} · {{ cards().length }} cards · by {{ d.creatorUsername }}
+          {{ d.category }} · {{ cards().length }} thẻ · bởi {{ d.creatorUsername }}
         </p>
       </div>
 
@@ -34,17 +34,32 @@
             (click)="modalOpen.set(true)"
             class="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
           >
-            Edit deck
+            Sửa bộ thẻ
           </button>
         }
+        <button
+          type="button"
+          (click)="enrollDeck()"
+          [disabled]="enrolling() || cards().length === 0"
+          class="rounded-lg border border-brand-200 bg-brand-50 px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-100 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {{ enrolling() ? 'Đang thêm…' : 'Đưa vào ôn tập' }}
+        </button>
         <a
           [routerLink]="['/decks', deckId(), 'study']"
           class="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
         >
-          Study
+          Học
         </a>
       </div>
     </div>
+
+    @if (enrollMessage(); as message) {
+      <div class="mt-4 rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-700">
+        {{ message }}
+        <a routerLink="/review" class="ml-2 font-semibold underline">Ôn ngay →</a>
+      </div>
+    }
 
     @if (isOwner()) {
       <form
@@ -53,26 +68,26 @@
         class="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
         novalidate
       >
-        <h2 class="text-sm font-bold uppercase tracking-wide text-slate-500">Add a new card</h2>
+        <h2 class="text-sm font-bold uppercase tracking-wide text-slate-500">Thêm thẻ mới</h2>
         <div class="mt-3 grid gap-3 sm:grid-cols-3">
           <input
             type="text"
             formControlName="term"
-            placeholder="Term *"
+            placeholder="Thuật ngữ *"
             class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
             [class.border-red-400]="addForm.controls.term.invalid && addForm.controls.term.touched"
           />
           <input
             type="text"
             formControlName="definition"
-            placeholder="Definition *"
+            placeholder="Định nghĩa *"
             class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
             [class.border-red-400]="addForm.controls.definition.invalid && addForm.controls.definition.touched"
           />
           <input
             type="text"
             formControlName="hint"
-            placeholder="Hint (optional)"
+            placeholder="Gợi ý (không bắt buộc)"
             class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
           />
         </div>
@@ -81,7 +96,7 @@
             type="submit"
             class="rounded-lg bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
-            + Add card
+            + Thêm thẻ
           </button>
         </div>
       </form>
@@ -89,9 +104,9 @@
 
     @if (isEmpty()) {
       <div class="mt-6 rounded-2xl border-2 border-dashed border-slate-300 p-12 text-center">
-        <p class="text-lg font-semibold text-slate-700">No cards yet.</p>
+        <p class="text-lg font-semibold text-slate-700">Chưa có thẻ nào.</p>
         <p class="mt-1 text-sm text-slate-500">
-          {{ isOwner() ? 'Add your first card above.' : 'The creator has not added cards yet.' }}
+          {{ isOwner() ? 'Thêm thẻ đầu tiên ở form phía trên.' : 'Người tạo chưa thêm thẻ nào.' }}
         </p>
       </div>
     } @else {
@@ -104,19 +119,19 @@
                   <input
                     type="text"
                     formControlName="term"
-                    placeholder="Term"
+                    placeholder="Thuật ngữ"
                     class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
                   />
                   <input
                     type="text"
                     formControlName="definition"
-                    placeholder="Definition"
+                    placeholder="Định nghĩa"
                     class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
                   />
                   <input
                     type="text"
                     formControlName="hint"
-                    placeholder="Hint (optional)"
+                    placeholder="Gợi ý (không bắt buộc)"
                     class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
                   />
                 </div>
@@ -126,49 +141,61 @@
                     (click)="cancelEdit()"
                     class="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
                   >
-                    Cancel
+                    Hủy
                   </button>
                   <button
                     type="submit"
                     class="rounded-lg bg-brand-600 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-700"
                   >
-                    Save
+                    Lưu
                   </button>
                 </div>
               </form>
             } @else {
               <div class="grid gap-3 sm:grid-cols-3">
                 <div>
-                  <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Term</p>
+                  <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Thuật ngữ</p>
                   <p class="mt-0.5 font-semibold">{{ card.term }}</p>
                 </div>
                 <div>
-                  <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Definition</p>
+                  <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Định nghĩa</p>
                   <p class="mt-0.5 text-slate-600">{{ card.definition }}</p>
                 </div>
                 <div>
-                  <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Hint</p>
+                  <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Gợi ý</p>
                   <p class="mt-0.5 text-slate-600">{{ card.hint || '—' }}</p>
                 </div>
               </div>
-              @if (isOwner()) {
-                <div class="mt-3 flex justify-end gap-2 border-t border-slate-100 pt-3">
+              <div class="mt-3 flex justify-end gap-2 border-t border-slate-100 pt-3">
+                <button
+                  type="button"
+                  (click)="toggleReviewQueue(card)"
+                  [disabled]="togglingCardId() === card.id"
+                  class="rounded-lg px-3 py-1.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
+                  [class.text-emerald-600]="savedIds().has(card.id)"
+                  [class.hover:bg-emerald-50]="savedIds().has(card.id)"
+                  [class.text-slate-500]="!savedIds().has(card.id)"
+                  [class.hover:bg-slate-100]="!savedIds().has(card.id)"
+                >
+                  {{ savedIds().has(card.id) ? '✓ Trong ôn tập — Bỏ' : '+ Lưu ôn tập' }}
+                </button>
+                @if (isOwner()) {
                   <button
                     type="button"
                     (click)="startEdit(card)"
                     class="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                   >
-                    Edit
+                    Sửa
                   </button>
                   <button
                     type="button"
                     (click)="deleteCard(card.id)"
                     class="rounded-lg px-3 py-1.5 text-sm font-semibold text-red-500 transition hover:bg-red-50 hover:text-red-600"
                   >
-                    Delete
+                    Xóa
                   </button>
-                </div>
-              }
+                }
+              </div>
             }
           </li>
         }

@@ -103,7 +103,7 @@ export class Dashboard {
   }
 
   protected deleteDeck(deck: Deck): void {
-    if (!confirm(`Delete deck "${deck.title}"? This cannot be undone.`)) return;
+    if (!confirm(`Xóa bộ thẻ "${deck.title}"? Hành động này không thể hoàn tác.`)) return;
 
     this.deckService.deleteDeck(deck.id).subscribe({
       next: () =>

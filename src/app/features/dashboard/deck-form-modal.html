@@ -10,43 +10,43 @@
       aria-modal="true"
     >
       <h2 class="text-xl font-bold">
-        {{ deck() ? 'Edit deck' : 'Create new deck' }}
+        {{ deck() ? 'Sửa bộ thẻ' : 'Tạo bộ thẻ mới' }}
       </h2>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="mt-5 space-y-4" novalidate>
         <div>
           <label for="deck-title" class="mb-1.5 block text-sm font-semibold text-slate-700">
-            Title <span class="text-red-500">*</span>
+            Tiêu đề <span class="text-red-500">*</span>
           </label>
           <input
             id="deck-title"
             type="text"
             formControlName="title"
-            placeholder="e.g. Spanish Verbs 101"
+            placeholder="VD: Điền gì cũng được"
             class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
             [class.border-red-400]="form.controls.title.invalid && form.controls.title.touched"
           />
           @if (form.controls.title.invalid && form.controls.title.touched) {
-            <p class="mt-1 text-xs text-red-600">Title is required (max 150 characters).</p>
+            <p class="mt-1 text-xs text-red-600">Vui lòng nhập tiêu đề (tối đa 150 ký tự).</p>
           }
         </div>
 
         <div>
           <label for="deck-description" class="mb-1.5 block text-sm font-semibold text-slate-700">
-            Description
+            Mô tả
           </label>
           <textarea
             id="deck-description"
             formControlName="description"
             rows="3"
-            placeholder="What is this deck about?"
+            placeholder="Bộ thẻ này về chủ đề gì?"
             class="w-full resize-none rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
           ></textarea>
         </div>
 
         <div>
           <label for="deck-category" class="mb-1.5 block text-sm font-semibold text-slate-700">
-            Category
+            Danh mục
           </label>
           <select
             id="deck-category"
@@ -61,8 +61,8 @@
 
         <label class="flex cursor-pointer items-center justify-between rounded-lg border border-slate-200 px-4 py-3">
           <span>
-            <span class="block text-sm font-semibold text-slate-700">Public deck</span>
-            <span class="block text-xs text-slate-500">Anyone can discover and study it.</span>
+            <span class="block text-sm font-semibold text-slate-700">Bộ thẻ công khai</span>
+            <span class="block text-xs text-slate-500">Ai cũng có thể tìm thấy và học bộ thẻ này.</span>
           </span>
           <input type="checkbox" formControlName="isPublic" class="size-5 accent-brand-600" />
         </label>
@@ -73,13 +73,13 @@
             (click)="close()"
             class="rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
           >
-            Cancel
+            Hủy
           </button>
           <button
             type="submit"
             class="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
-            {{ deck() ? 'Save changes' : 'Create deck' }}
+            {{ deck() ? 'Lưu thay đổi' : 'Tạo bộ thẻ' }}
           </button>
         </div>
       </form>
