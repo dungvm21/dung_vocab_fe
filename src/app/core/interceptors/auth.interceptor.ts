@@ -16,7 +16,9 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
     : req;
 
-  return next(request).pipe(catchError((error: unknown) => throwError(() => toMessage(error))));
+  return next(request).pipe(
+    catchError((error: unknown) => throwError(() => new Error(toMessage(error)))),
+  );
 };
 
 function toMessage(error: unknown): string {

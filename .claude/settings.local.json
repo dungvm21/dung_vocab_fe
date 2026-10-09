@@ -19,7 +19,21 @@
       "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | tail -12)",
       "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | tail -4)",
       "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | grep -E \"ERROR|WARNING|error|✘\" | head -10)",
-      "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | tail -3)"
+      "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | tail -3)",
+      "Bash(curl -s http://localhost:8081/api/decks/search | head -3; echo; curl -s -X POST http://localhost:8081/api/auth/register -H \"Content-Type: application/json\" -d '{\"username\":\"curltest\",\"email\":\"curltest@example.com\",\"password\":\"password123\"}' | head -3)",
+      "Bash(curl -s http://localhost:8081/api/decks/1/cards; echo; curl -s http://localhost:8081/api/decks/1)",
+      "Bash(lsof -ti:4200 >/dev/null && echo \"server running\" || echo \"server NOT running\"; curl -s http://localhost:4200/api/decks/1/cards; echo; curl -s http://localhost:4200/api/decks/1 | head -1)",
+      "Read(//Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe/**)",
+      "Bash(lsof -iTCP -sTCP:LISTEN -P)",
+      "Bash(curl -s -o /dev/null -w \"quiz: %{http_code}\\\\n\" \"http://localhost:8081/api/decks/1/study/quiz?count=3\"; ls /Users/vomanh.dung/IdeaProjects/quizlet_fake/src/main/resources/db/migration/ 2>/dev/null; ls /Users/vomanh.dung/IdeaProjects/quizlet_fake/src/main/java/com/example/quizlet/service/ /Users/vomanh.dung/IdeaProjects/quizlet_fake/src/main/java/com/example/quizlet/entity/ 2>/dev/null)",
+      "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | tail -6)",
+      "Bash(lsof -ti:4200 >/dev/null && echo \"dev server up\" || echo \"dev server DOWN\"; curl -s -o /dev/null -w \"root: %{http_code}\\\\n\" http://localhost:4200/; curl -s \"http://localhost:8081/api/decks/1/study/quiz?count=3\" | head -3)",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" \"http://localhost:8081/api/decks/1/study/quiz?count=3\" | head -5)",
+      "Bash(curl -s -w \"\\\\n--> cards via proxy: %{http_code}\\\\n\" http://localhost:4200/api/decks/1/cards | tail -1; curl -s \"http://localhost:4200/api/decks/1/study/quiz?count=3\" | head -c 200; echo; echo \"direct 8081 quiz:\"; curl -s -w \"\\\\n--> %{http_code}\\\\n\" \"http://localhost:8081/api/decks/1/study/quiz?count=3\" | tail -1; ps -p 89776 -o lstart=)",
+      "Bash(curl -s -o /tmp/proxyquiz.txt -w \"proxy quiz status: %{http_code}\\\\n\" \"http://localhost:4200/api/decks/1/study/quiz?count=3\")",
+      "Read(//tmp/**)",
+      "Bash(ps -p 89776 -o lstart=)",
+      "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && grep -rn \"routerLink\\\\]\" src/app/features | grep -v \"\\(\\)\" | grep -E \"\\\\[\\\\s*'/\" | head; npx ng build 2>&1 | tail -3)"
     ]
   }
 }
