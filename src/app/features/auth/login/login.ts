@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -35,7 +34,7 @@ export class Login {
 
     this.auth.login(this.form.getRawValue()).subscribe({
       next: () => void this.router.navigate(['/dashboard']),
-      error: (err: HttpErrorResponse) => {
+      error: (err: Error) => {
         this.error.set(err.message);
         this.submitting.set(false);
       },
