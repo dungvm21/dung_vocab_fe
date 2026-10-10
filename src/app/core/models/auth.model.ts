@@ -11,13 +11,21 @@ export interface RegisterRequest {
   password: string;
 }
 
-/** Response for successful register/login (backend AuthResponse). */
+/** Response for successful register/login/refresh (backend AuthResponse). */
 export interface AuthResponse {
+  /** Short-lived signed JWT. */
   accessToken: string;
+  /** Opaque, rotatable — sent to /api/auth/refresh when the access token expires. */
+  refreshToken: string;
   /** e.g. "Bearer" */
   tokenType: string;
   id: number;
   username: string;
   email: string;
   role: string;
+}
+
+/** Payload for POST /api/auth/refresh and POST /api/auth/logout. */
+export interface TokenRefreshRequest {
+  refreshToken: string;
 }
