@@ -5,6 +5,17 @@ import { Observable, catchError, finalize, share, switchMap, throwError } from '
 
 import { AuthService } from '../services/auth.service';
 
+/** Error carrying the HTTP status — callers branch on 404 (deleted deck) etc. */
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 /**
  * Attaches the JWT bearer token to every API request and normalizes
  * backend errors into a message string on the thrown error.
@@ -31,7 +42,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
       ) {
         return handleSessionExpired(req, next, auth);
       }
-      return throwError(() => new Error(toMessage(error)));
+      return throwError(() => toApiError(error));
     }),
   );
 };
@@ -58,8 +69,15 @@ function handleSessionExpired(
       // Refresh failed (expired/revoked token) — session is unrecoverable.
       auth.logout();
       inject(Router).navigate(['/login']);
-      return throwError(() => new Error(toMessage(error, true)));
+      return throwError(() => toApiError(error, true));
     }),
+  );
+}
+
+function toApiError(error: unknown, sessionExpired = false): ApiError {
+  return new ApiError(
+    toMessage(error, sessionExpired),
+    error instanceof HttpErrorResponse ? error.status : 0,
   );
 }
 

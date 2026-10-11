@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { Card, CardRequest } from '../../core/models/card.model';
@@ -9,6 +9,8 @@ import { AuthService } from '../../core/services/auth.service';
 import { CardService } from '../../core/services/card.service';
 import { DeckService } from '../../core/services/deck.service';
 import { ReviewService } from '../../core/services/review.service';
+import { ApiError } from '../../core/interceptors/auth.interceptor';
+import { ConfirmModal } from '../dashboard/confirm-modal';
 import { DeckFormModal } from '../dashboard/deck-form-modal';
 
 /** Transient toast pushed to the notice queue; auto-dismissed after 5s. */
@@ -19,7 +21,7 @@ const MAX_NOTICES = 3;
 
 @Component({
   selector: 'app-deck-detail',
-  imports: [ReactiveFormsModule, RouterLink, DeckFormModal],
+  imports: [ReactiveFormsModule, RouterLink, ConfirmModal, DeckFormModal],
   templateUrl: './deck-detail.html',
   styleUrl: './deck-detail.css',
 })
@@ -29,12 +31,25 @@ export class DeckDetail implements OnInit {
   private readonly cardService = inject(CardService);
   private readonly reviewService = inject(ReviewService);
   private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
   /** Route param, bound via withComponentInputBinding. */
   readonly deckId = input.required<number>();
 
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
+  /** True when GET /decks/{id} returned 404 — deck deleted by its owner. */
+  protected readonly notFound = signal(false);
+  protected readonly deleting = signal(false);
+  protected readonly deleteModalOpen = signal(false);
+
+  /** Hardcoded until the backend exposes a learners-count endpoint. */
+  protected readonly learnerCount = signal(0);
+
+  protected readonly deleteConfirmMessage = computed(() =>
+    `Đang có ${this.learnerCount()} người đang học deck này. Nếu bạn vẫn muốn xoá, ` +
+    `hãy nhập "Xoá" vào ô bên dưới để xác nhận.`,
+  );
 
   protected readonly deck = signal<Deck | null>(null);
   protected readonly cards = signal<Card[]>([]);
@@ -169,6 +184,32 @@ export class DeckDetail implements OnInit {
     });
   }
 
+  /**
+   * Owner-only. Backend cascades: cards plus every learner's study/SRS rows
+   * are wiped and learners get a notification email — hence the typed-
+   * confirmation modal instead of a plain confirm().
+   */
+  protected openDeleteModal(): void {
+    this.deleteModalOpen.set(true);
+  }
+
+  /** Runs after the user typed "Xoá" in the ConfirmModal. */
+  protected deleteDeck(): void {
+    if (this.deleting()) return;
+
+    this.deleting.set(true);
+    this.deckService.deleteDeck(this.deckId()).subscribe({
+      next: () => {
+        this.deleteModalOpen.set(false);
+        void this.router.navigate(['/dashboard']);
+      },
+      error: (err: Error) => {
+        this.deleting.set(false);
+        this.pushNotice(err.message, 'danger');
+      },
+    });
+  }
+
   /** Adds every card of this deck to the user's SRS review queue. */
   protected enrollDeck(): void {
     if (this.enrolling()) return;
@@ -242,7 +283,13 @@ export class DeckDetail implements OnInit {
 
     this.deckService.getDeck(deckId).subscribe({
       next: (deck) => this.deck.set(deck),
-      error: (err: Error) => this.error.set(err.message),
+      error: (err: ApiError) => {
+        if (err.status === 404) {
+          this.notFound.set(true);
+        } else {
+          this.error.set(err.message);
+        }
+      },
     });
 
     this.cardService
@@ -250,7 +297,10 @@ export class DeckDetail implements OnInit {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (cards) => this.cards.set(cards),
-        error: (err: Error) => this.error.set(err.message),
+        error: (err: ApiError) => {
+          if (err.status === 404) return; // deck-level 404 already handled above
+          this.error.set(err.message);
+        },
       });
 
     this.reviewService
