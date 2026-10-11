@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -10,6 +10,12 @@ import { CardService } from '../../core/services/card.service';
 import { DeckService } from '../../core/services/deck.service';
 import { ReviewService } from '../../core/services/review.service';
 import { DeckFormModal } from '../dashboard/deck-form-modal';
+
+/** Transient toast pushed to the notice queue; auto-dismissed after 5s. */
+type Notice = { id: number; text: string; tone: 'success' | 'danger' };
+
+const NOTICE_TTL_MS = 5000;
+const MAX_NOTICES = 3;
 
 @Component({
   selector: 'app-deck-detail',
@@ -40,7 +46,17 @@ export class DeckDetail implements OnInit {
   protected readonly savedIds = signal<Set<number>>(new Set());
   protected readonly togglingCardId = signal<number | null>(null);
   protected readonly enrolling = signal(false);
-  protected readonly enrollMessage = signal<string | null>(null);
+
+  protected readonly notices = signal<Notice[]>([]);
+  private noticeSeq = 0;
+  private readonly noticeTimers = new Map<number, ReturnType<typeof setTimeout>>();
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => {
+      for (const timer of this.noticeTimers.values()) clearTimeout(timer);
+      this.noticeTimers.clear();
+    });
+  }
 
   protected readonly isOwner = computed(
     () => this.deck()?.creatorId === this.auth.currentUser()?.id,
@@ -49,6 +65,24 @@ export class DeckDetail implements OnInit {
   protected readonly isEmpty = computed(
     () => !this.loading() && this.error() === null && this.cards().length === 0,
   );
+
+  protected pushNotice(text: string, tone: Notice['tone']): void {
+    const id = ++this.noticeSeq;
+    this.notices.update((list) => [...list, { id, text, tone }].slice(-MAX_NOTICES));
+    this.noticeTimers.set(
+      id,
+      setTimeout(() => this.dismissNotice(id), NOTICE_TTL_MS),
+    );
+  }
+
+  protected dismissNotice(id: number): void {
+    const timer = this.noticeTimers.get(id);
+    if (timer !== undefined) {
+      clearTimeout(timer);
+      this.noticeTimers.delete(id);
+    }
+    this.notices.update((list) => list.filter((n) => n.id !== id));
+  }
 
   protected readonly addForm = this.fb.nonNullable.group({
     term: ['', [Validators.required, Validators.maxLength(255)]],
@@ -123,7 +157,14 @@ export class DeckDetail implements OnInit {
     if (!confirm('Xóa thẻ này?')) return;
 
     this.cardService.deleteCard(this.deckId(), cardId).subscribe({
-      next: () => this.cards.update((cards) => cards.filter((c) => c.id !== cardId)),
+      next: () => {
+        this.cards.update((cards) => cards.filter((c) => c.id !== cardId));
+        this.savedIds.update((ids) => {
+          const n = new Set(ids);
+          n.delete(cardId);
+          return n;
+        });
+      },
       error: (err: Error) => this.error.set(err.message),
     });
   }
@@ -133,19 +174,21 @@ export class DeckDetail implements OnInit {
     if (this.enrolling()) return;
 
     this.enrolling.set(true);
-    this.enrollMessage.set(null);
     this.reviewService.enrollDeck(this.deckId()).subscribe({
       next: (result) => {
         this.enrolling.set(false);
-        this.enrollMessage.set(
+        this.pushNotice(
           result.newlyEnrolled === 0 && result.totalCards > 0
             ? `Cả ${result.alreadyEnrolled} thẻ đã có trong hàng ôn tập.`
             : `Đã thêm ${result.newlyEnrolled}/${result.totalCards} thẻ vào hàng ôn tập — vào "Ôn tập" để bắt đầu.`,
+          'success',
         );
+        this.savedIds.update(
+          (current) => new Set([...current, ...this.cards().map((c) => c.id)]));
       },
       error: (err: Error) => {
         this.enrolling.set(false);
-        this.enrollMessage.set(err.message);
+        this.pushNotice(err.message, 'danger');
       },
     });
   }
@@ -167,6 +210,7 @@ export class DeckDetail implements OnInit {
             next.delete(card.id);
             return next;
           });
+          this.pushNotice(`Đã xoá "${card.term}" khỏi ôn tập.`, 'danger');
           this.togglingCardId.set(null);
         },
         error: (err: Error) => {
@@ -178,7 +222,9 @@ export class DeckDetail implements OnInit {
       this.reviewService.saveCard(card.id).subscribe({
         next: (result) => {
           this.savedIds.update((ids) => new Set(ids).add(card.id));
-          this.enrollMessage.set(result.saved ? `Đã thêm "${card.term}" vào ôn tập.` : null);
+          if (result.saved) {
+            this.pushNotice(`Đã thêm "${card.term}" vào ôn tập.`, 'success');
+          }
           this.togglingCardId.set(null);
         },
         error: (err: Error) => {
@@ -206,5 +252,13 @@ export class DeckDetail implements OnInit {
         next: (cards) => this.cards.set(cards),
         error: (err: Error) => this.error.set(err.message),
       });
+
+    this.reviewService
+      .getSavedCardIds()
+      .subscribe({
+        next: (ids) =>
+          this.savedIds.update((current) => new Set([...current, ...ids])),
+        error: () => undefined
+      })
   }
 }

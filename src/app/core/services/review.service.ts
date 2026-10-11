@@ -43,4 +43,8 @@ export class ReviewService {
   removeCard(cardId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${cardId}`);
   }
+
+  getSavedCardIds(): Observable<number[]> {
+    return this.http.get<number[]>(`${this.baseUrl}/saved`);
+  }
 }
