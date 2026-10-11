@@ -54,10 +54,34 @@
       </div>
     </div>
 
-    @if (enrollMessage(); as message) {
-      <div class="mt-4 rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-700">
-        {{ message }}
-        <a routerLink="/review" class="ml-2 font-semibold underline">Ôn ngay →</a>
+    @if (notices().length > 0) {
+      <div class="mt-4 space-y-2" aria-live="polite">
+        @for (n of notices(); track n.id) {
+          <div
+            class="flex items-center justify-between gap-4 rounded-lg border px-4 py-3 text-sm"
+            [class.border-brand-200]="n.tone === 'success'"
+            [class.bg-brand-50]="n.tone === 'success'"
+            [class.text-brand-700]="n.tone === 'success'"
+            [class.border-red-200]="n.tone === 'danger'"
+            [class.bg-red-50]="n.tone === 'danger'"
+            [class.text-red-700]="n.tone === 'danger'"
+          >
+            <span>{{ n.text }}</span>
+            <span class="flex shrink-0 items-center gap-3">
+              @if (n.tone === 'success') {
+                <a routerLink="/review" class="font-semibold underline">Ôn ngay →</a>
+              }
+              <button
+                type="button"
+                (click)="dismissNotice(n.id)"
+                class="font-bold opacity-50 transition hover:opacity-100"
+                aria-label="Đóng thông báo"
+              >
+                ×
+              </button>
+            </span>
+          </div>
+        }
       </div>
     }
 
