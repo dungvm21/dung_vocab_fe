@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { Card } from '../../core/models/card.model';
@@ -22,6 +22,7 @@ export class Study implements OnInit {
   private readonly deckService = inject(DeckService);
   private readonly cardService = inject(CardService);
   private readonly studyService = inject(StudyService);
+  private readonly router = inject(Router);
 
   /** Route param, bound via withComponentInputBinding. */
   readonly deckId = input.required<number>();
@@ -67,6 +68,22 @@ export class Study implements OnInit {
     if (tab === 'quiz' && this.questions().length === 0 && !this.quizFinished()) {
       this.startQuiz();
     }
+  }
+
+  /**
+   * Leaves study mode. Mid-quiz (at least one answer submitted, quiz not yet
+   * finished) asks for confirmation — submitted answers are already persisted
+   * per-click, so only the current question sequence is at stake.
+   */
+  protected exitStudy(): void {
+    if (this.tab() === 'quiz' && this.answered() && !this.quizFinished()) {
+      const ok = confirm(
+        'Bạn đang giữa bài trắc nghiệm. Các câu đã trả lời đều đã được ghi nhận, ' +
+        'nhưng dừng bây giờ sẽ mất vị trí câu hỏi hiện tại. Xác nhận thoát?',
+      );
+      if (!ok) return;
+    }
+    void this.router.navigate(['/decks', this.deckId()]);
   }
 
   // ── Flip mode ──────────────────────────────────────────────────────

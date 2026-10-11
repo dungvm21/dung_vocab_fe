@@ -41,7 +41,8 @@
       "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | grep -E \"\\(ERROR|error TS|NG[0-9]|complete\\)\" | head -5)",
       "Bash(sed -n 44,70p /Users/vomanh.dung/IdeaProjects/quizlet_fake/src/main/java/com/example/quizlet/security/JwtAuthenticationFilter.java; echo ====; sed -n 60,80p /Users/vomanh.dung/IdeaProjects/quizlet_fake/src/main/java/com/example/quizlet/security/JwtService.java)",
       "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" http://localhost:8081/api/decks/me -H \"Authorization: Bearer invalid\" | head -5; echo \"---- anonymous:\"; curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" http://localhost:8081/api/decks/me | head -5)",
-      "Bash(echo \"GET /api/decks/1/study/progress anonymous:\"; curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8081/api/decks/1/study/progress; echo \"GET /api/reviews/due anonymous:\"; curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8081/api/reviews/due; echo \"POST /api/decks anonymous:\"; curl -s -o /dev/null -w \"%{http_code}\\\\n\" -X POST http://localhost:8081/api/decks -H \"Content-Type: application/json\" -d '{}')"
+      "Bash(echo \"GET /api/decks/1/study/progress anonymous:\"; curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8081/api/decks/1/study/progress; echo \"GET /api/reviews/due anonymous:\"; curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8081/api/reviews/due; echo \"POST /api/decks anonymous:\"; curl -s -o /dev/null -w \"%{http_code}\\\\n\" -X POST http://localhost:8081/api/decks -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(cd \"/Users/vomanh.dung/Documents/Coding/quizlet_fake project/quizlet_fe\" && npx ng build 2>&1 | tail -5)"
     ]
   }
 }
