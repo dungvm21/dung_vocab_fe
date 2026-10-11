@@ -1,0 +1,50 @@
+@if (open()) {
+  <div
+    class="fixed inset-0 z-50 grid place-items-center bg-slate-900/50 p-4 backdrop-blur-sm"
+    (click)="close()"
+  >
+    <div
+      class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+      (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-modal-title"
+    >
+      <h2 id="confirm-modal-title" class="text-xl font-bold text-slate-900">
+        {{ title() }}
+      </h2>
+
+      <p class="mt-3 text-sm leading-relaxed text-slate-600">{{ message() }}</p>
+
+      <label for="confirm-modal-input" class="mt-4 block text-sm font-semibold text-slate-700">
+        Nhập "{{ confirmWord() }}" để xác nhận
+      </label>
+      <input
+        id="confirm-modal-input"
+        type="text"
+        [ngModel]="typedWord()"
+        (ngModelChange)="typedWord.set($event)"
+        class="mt-1.5 w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+        autocomplete="off"
+      />
+
+      <div class="mt-5 flex justify-end gap-3">
+        <button
+          type="button"
+          (click)="close()"
+          class="rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+        >
+          Hủy
+        </button>
+        <button
+          type="button"
+          (click)="confirm()"
+          [disabled]="!wordMatches() || busy()"
+          class="rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {{ busy() ? 'Đang xử lý…' : confirmLabel() }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

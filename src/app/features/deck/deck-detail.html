@@ -1,5 +1,17 @@
 <div class="mx-auto w-full max-w-4xl px-4 py-8">
-  @if (error(); as message) {
+  @if (notFound()) {
+    <div class="mt-12 rounded-2xl border border-slate-200 bg-white p-12 text-center">
+      <p class="text-lg font-semibold text-slate-700">
+        Bộ thẻ đã bị xoá bởi tác giả hoặc không tồn tại.
+      </p>
+      <a
+        routerLink="/dashboard"
+        class="mt-4 inline-block rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
+      >
+        Về trang chủ
+      </a>
+    </div>
+  } @else if (error(); as message) {
     <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
       {{ message }}
     </div>
@@ -35,6 +47,13 @@
             class="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
           >
             Sửa bộ thẻ
+          </button>
+          <button
+            type="button"
+            (click)="openDeleteModal()"
+            class="rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+          >
+            Xoá
           </button>
         }
         <button
@@ -232,4 +251,12 @@
   [(open)]="modalOpen"
   [deck]="deck()"
   (saved)="saveDeckChanges()"
+/>
+
+<app-confirm-modal
+  [(open)]="deleteModalOpen"
+  title="Xoá bộ thẻ"
+  [message]="deleteConfirmMessage()"
+  [busy]="deleting()"
+  (confirmed)="deleteDeck()"
 />
